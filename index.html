@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>报名确认 · 北欧深圳总商会 2026 年会</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+  :root{
+    --ink:#0E2439; --ink2:#16314B; --gold:#D4AF61; --gold-dim:#9C8142;
+    --cream:#F2EDE3; --dim:#AEBAC8; --line:rgba(212,175,97,.28);
+    --ok:#4C9E78; --err:#D97757;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--ink);color:var(--cream);
+    font-family:"Noto Sans SC","PingFang SC",sans-serif;-webkit-font-smoothing:antialiased}
+  .en{font-family:"EB Garamond",Georgia,serif}
+  .wrap{max-width:560px;margin:0 auto;padding:30px 22px 60px}
+
+  header{text-align:center;padding:14px 0 24px;border-bottom:1px solid var(--line)}
+  .kicker{font-size:12px;letter-spacing:.34em;text-indent:.34em;color:var(--gold-dim)}
+  h1{margin:12px 0 0;font-family:"Noto Serif SC",serif;font-weight:700;
+     font-size:21px;line-height:1.5;color:var(--gold)}
+  .h1en{margin-top:8px;font-size:14px;line-height:1.5;color:var(--dim)}
+
+  .meta{margin-top:20px;display:flex;flex-direction:column;gap:11px;
+        background:rgba(255,255,255,.045);border:1px solid var(--line);
+        border-radius:10px;padding:16px 18px}
+  .mrow{display:flex;gap:14px;font-size:14px;line-height:1.55}
+  .mrow .k{flex:0 0 54px;color:var(--gold);font-weight:500}
+  .mrow .k small{display:block;font-size:10.5px;letter-spacing:.06em;color:var(--gold-dim);font-weight:400}
+  .mrow .v small{display:block;margin-top:2px;font-size:12.5px;color:var(--dim)}
+
+  .who{margin-top:26px;text-align:center}
+  .who .lbl{font-size:12.5px;color:var(--dim);letter-spacing:.1em}
+  .who .nm{margin-top:7px;font-family:"Noto Serif SC",serif;font-weight:600;
+           font-size:26px;color:var(--gold)}
+
+  form{margin-top:26px}
+  fieldset{border:0;margin:0 0 22px;padding:0}
+  legend{padding:0;font-size:15px;font-weight:500;margin-bottom:11px}
+  legend .req{color:var(--err);margin-left:4px}
+  legend small{display:block;margin-top:3px;font-size:12.5px;font-weight:400;color:var(--dim)}
+
+  .opts{display:flex;gap:11px}
+  .opt{flex:1;position:relative}
+  .opt input{position:absolute;opacity:0;width:0;height:0}
+  .opt span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:52px;
+    border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.04);
+    font-size:15.5px;cursor:pointer;transition:.15s;text-align:center;line-height:1.35;padding:6px}
+  .opt input:checked + span{background:var(--gold);border-color:var(--gold);
+    color:#10243A;font-weight:600}
+  .opt input:focus-visible + span{outline:2px solid var(--gold);outline-offset:2px}
+
+  label.f{display:block;margin-bottom:15px}
+  label.f .t{font-size:13.5px;color:var(--dim);margin-bottom:6px;display:block}
+  input[type=text],input[type=email]{width:100%;min-height:48px;padding:11px 13px;
+    background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:8px;
+    color:var(--cream);font-size:15.5px;font-family:inherit}
+  input:focus{outline:none;border-color:var(--gold);background:rgba(255,255,255,.08)}
+
+  .note{margin:-4px 0 20px;font-size:12.5px;line-height:1.7;color:var(--dim)}
+
+  button{width:100%;min-height:56px;border:0;border-radius:9px;background:var(--gold);
+    color:#10243A;font-size:17px;font-weight:600;font-family:inherit;cursor:pointer}
+  button:disabled{opacity:.5;cursor:default}
+
+  .err{margin-top:10px;font-size:13.5px;color:var(--err);display:none}
+  .err.on{display:block}
+
+  #done{display:none;text-align:center;padding:46px 10px}
+  #done .tick{font-size:54px;color:var(--ok);line-height:1}
+  #done h2{margin:16px 0 0;font-family:"Noto Serif SC",serif;font-size:22px;color:var(--gold)}
+  #done .sub{margin-top:9px;font-size:14.5px;line-height:1.7;color:var(--cream)}
+  #done .en2{margin-top:6px;font-size:13.5px;line-height:1.6;color:var(--dim)}
+  #done .card{margin-top:24px;text-align:left;background:rgba(255,255,255,.045);
+    border:1px solid var(--line);border-radius:10px;padding:15px 18px;font-size:14px;line-height:1.9}
+  #done .card b{color:var(--gold);font-weight:500}
+  .foot{margin-top:30px;text-align:center;font-size:12px;line-height:1.8;color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kicker en">NORDIC SHENZHEN CHAMBER OF COMMERCE</div>
+    <h1>2026 年会<br>暨深圳城市推介与 APEC 机遇交流会</h1>
+    <div class="h1en en">2026 Annual Meeting &amp; Shenzhen City Presentation<br>and APEC Opportunities Forum</div>
+  </header>
+
+  <div class="meta">
+    <div class="mrow"><div class="k">时间<small class="en">TIME</small></div>
+      <div class="v">2026 年 10 月 15 日（星期四）13:30–15:30
+        <small class="en">Thursday, 15 October 2026 · 13:30–15:30</small></div></div>
+    <div class="mrow"><div class="k">地点<small class="en">VENUE</small></div>
+      <div class="v">Grand Hôtel Stockholm，New York 厅
+        <small class="en">New York Room · Södra Blasieholmshamnen 8, 103 27 Stockholm</small></div></div>
+  </div>
+
+  <div class="who">
+    <div class="lbl en">尊敬的　DEAR</div>
+    <div class="nm" id="nm">—</div>
+  </div>
+
+  <form id="f" novalidate>
+    <!-- 编号：嘉宾看不见，也改不了 -->
+    <input type="hidden" id="code">
+
+    <fieldset>
+      <legend>是否确定参加<span class="req">*</span>
+        <small class="en">Will you attend?</small></legend>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="go" value="是" required>
+          <span><i style="font-style:normal">是，我会出席</i><i class="en" style="font-style:normal;font-size:12.5px;opacity:.75">Yes</i></span></label>
+        <label class="opt"><input type="radio" name="go" value="否">
+          <span><i style="font-style:normal">抱歉，无法出席</i><i class="en" style="font-style:normal;font-size:12.5px;opacity:.75">No</i></span></label>
+      </div>
+    </fieldset>
+
+    <fieldset id="cntBox">
+      <legend>出席总人数<span class="req">*</span>
+        <small class="en">包括您本人，最多 3 位　·　Including yourself, max 3</small></legend>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="cnt" value="1"><span>1 位</span></label>
+        <label class="opt"><input type="radio" name="cnt" value="2"><span>2 位</span></label>
+        <label class="opt"><input type="radio" name="cnt" value="3"><span>3 位</span></label>
+      </div>
+    </fieldset>
+
+    <p class="note">以下信息如有出入，请直接修改，我们会以您填写的为准。<br>
+      <span class="en">Please correct the details below if needed.</span></p>
+
+    <label class="f"><span class="t">姓名　Name<span class="req" style="color:var(--err)">*</span></span>
+      <input type="text" id="nameIn" autocomplete="name"></label>
+    <label class="f"><span class="t">公司 / 机构　Organisation</span>
+      <input type="text" id="coIn" autocomplete="organization"></label>
+    <label class="f"><span class="t">职位　Position</span>
+      <input type="text" id="posIn" autocomplete="organization-title"></label>
+    <label class="f"><span class="t">Email</span>
+      <input type="email" id="mailIn" autocomplete="email" inputmode="email"></label>
+
+    <button type="submit" id="btn">提交　Submit</button>
+    <div class="err" id="err"></div>
+  </form>
+
+  <div id="done">
+    <div class="tick">✓</div>
+    <h2 id="doneT">报名成功</h2>
+    <div class="sub" id="doneS"></div>
+    <div class="en2" id="doneE"></div>
+    <div class="card" id="doneC"></div>
+    <p class="note" style="margin-top:20px">请保留您的邀请函，入场时需出示上面的二维码。<br>
+      <span class="en">Please keep your invitation — the QR code is required for entry.</span></p>
+  </div>
+
+  <div class="foot en">
+    如有疑问请回复邀请邮件　·　For any question, please reply to your invitation
+  </div>
+</div>
+
+<script>
+(function(){
+  var FORM = '1FAIpQLSeT0szpZ-PD0emXc-UqWCkzmWd0Ec-YcptKJNRgfIiFXhXuJw';
+  var E = {                                   // 字段 ID —— 改表单题目不影响，删题重建才会变
+    code:'entry.1876901674', name:'entry.146832424',  co:'entry.1851509862',
+    pos :'entry.1434538926', mail:'entry.1989754270', go:'entry.1760395912',
+    cnt :'entry.358036365'
+  };
+  var q  = new URLSearchParams(location.search);
+  var $  = function(id){ return document.getElementById(id); };
+
+  var code = (q.get('g')||'').trim().toUpperCase();
+  var name = (q.get('n')||'').trim();
+  $('code').value = code;
+  $('nm').textContent  = name || '嘉宾';
+  $('nameIn').value    = name;
+  $('coIn').value      = (q.get('c')||'').trim();
+
+  // 没有编号 = 链接不完整，不让提交，免得收到一堆对不上的回执
+  if (!code){
+    $('err').textContent = '链接不完整，请通过邀请函上的二维码进入。Invalid link — please scan the QR code on your invitation.';
+    $('err').className = 'err on';
+    $('btn').disabled = true;
+  }
+
+  // 选「否」就不用填人数了
+  var cntBox = $('cntBox');
+  document.querySelectorAll('input[name=go]').forEach(function(r){
+    r.addEventListener('change', function(){
+      var yes = r.value === '是';
+      cntBox.style.display = yes ? '' : 'none';
+      if (!yes) document.querySelectorAll('input[name=cnt]').forEach(function(c){ c.checked=false; });
+    });
+  });
+
+  $('f').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var go  = document.querySelector('input[name=go]:checked');
+    var cnt = document.querySelector('input[name=cnt]:checked');
+    var nm  = $('nameIn').value.trim();
+    var err = $('err');
+
+    if (!go)                       return fail('请选择是否参加　Please choose whether you will attend.');
+    if (go.value === '是' && !cnt) return fail('请选择出席人数　Please choose the number of guests.');
+    if (!nm)                       return fail('请填写姓名　Please enter your name.');
+    function fail(m){ err.textContent = m; err.className='err on'; return false; }
+    err.className = 'err';
+
+    var body = new URLSearchParams();
+    body.append(E.code, code);
+    body.append(E.name, nm);
+    body.append(E.co,   $('coIn').value.trim());
+    body.append(E.pos,  $('posIn').value.trim());
+    body.append(E.mail, $('mailIn').value.trim());
+    body.append(E.go,   go.value);
+    body.append(E.cnt,  go.value === '是' ? cnt.value : '0');
+
+    $('btn').disabled = true;
+    $('btn').textContent = '提交中…　Submitting…';
+
+    // 跨域提交拿不到响应，只能发出去就算数 —— 所以页面上留了联系方式兜底
+    fetch('https://docs.google.com/forms/d/e/'+FORM+'/formResponse',
+          {method:'POST', mode:'no-cors',
+           headers:{'Content-Type':'application/x-www-form-urlencoded'},
+           body: body.toString()})
+      .catch(function(){})
+      .then(function(){ show(go.value === '是', nm, cnt && cnt.value); });
+  });
+
+  function show(yes, nm, cnt){
+    $('f').style.display = 'none';
+    var d = $('done'); d.style.display = 'block';
+    if (yes){
+      $('doneT').textContent = '报名成功';
+      $('doneS').textContent = '期待与您相见。';
+      $('doneE').textContent = 'Thank you — we look forward to seeing you.';
+      $('doneC').innerHTML =
+        '<b>姓名</b>　'+esc(nm)+'<br><b>出席人数</b>　'+esc(cnt)+' 位<br>'+
+        '<b>时间</b>　2026 年 10 月 15 日 13:30<br><b>地点</b>　Grand Hôtel Stockholm，New York 厅';
+    } else {
+      $('doneT').textContent = '已收到您的回复';
+      $('doneS').textContent = '感谢您的告知，期待下次相聚。';
+      $('doneE').textContent = 'Thank you for letting us know.';
+      $('doneC').style.display = 'none';
+      document.querySelectorAll('#done .note').forEach(function(n){ n.style.display='none'; });
+    }
+    window.scrollTo(0,0);
+  }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,
+    function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+})();
+</script>
+</body>
+</html>
