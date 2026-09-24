@@ -110,7 +110,9 @@
     <div class="nm" id="nm">—</div>
   </div>
 
-  <form id="f" novalidate>
+  <p class="note" id="chk" style="text-align:center;margin-top:30px">正在核对报名信息…<br><span class="en">Checking…</span></p>
+
+  <form id="f" novalidate style="display:none">
     <!-- 编号：嘉宾看不见，也改不了 -->
     <input type="hidden" id="code">
 
@@ -166,6 +168,7 @@
   </div>
 </div>
 
+<script src="data.js"></script>
 <script>
 (function(){
   var FORM = '1FAIpQLSeT0szpZ-PD0emXc-UqWCkzmWd0Ec-YcptKJNRgfIiFXhXuJw';
@@ -177,19 +180,70 @@
   var q  = new URLSearchParams(location.search);
   var $  = function(id){ return document.getElementById(id); };
 
-  var code = (q.get('g')||'').trim().toUpperCase();
-  var name = (q.get('n')||'').trim();
-  $('code').value = code;
-  $('nm').textContent  = name || '嘉宾';
-  $('nameIn').value    = name;
-  $('coIn').value      = (q.get('c')||'').trim();
+  var code = '', name = '';
+  $('btn').disabled = true;                 // 解出身份之前不许提交
+  $('nm').textContent = '…';
 
-  // 没有编号 = 链接不完整，不让提交，免得收到一堆对不上的回执
-  if (!code){
-    $('err').textContent = '链接不完整，请通过邀请函上的二维码进入。Invalid link — please scan the QR code on your invitation.';
-    $('err').className = 'err on';
-    $('btn').disabled = true;
+  // 链接里只有令牌 ?t=，不含人名。
+  // 令牌 → PBKDF2 派生 40 字节：前 8 字节查加密名单，后 32 字节做 AES-GCM 解密。参数必须和 生成数据.py 一致。
+  function b64(s){ return Uint8Array.from(atob(s), function(c){ return c.charCodeAt(0); }); }
+  function hex(u){ return Array.from(u, function(b){ return ('0'+b.toString(16)).slice(-2); }).join(''); }
+  // ── 查重：只能报一次 ──────────────────────────────────────────
+  // ① 本机记忆（即时）  ② 公开的「已报名编号」清单（Google 约 5 分钟刷新）  ③ 都没有 → 显示表单
+  // 清单只有 编号,是否参加,人数 三列，不含任何姓名邮箱；每个编号只取第一次提交。
+  var CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRT1CZmOwTSQx-I5QxkDc3TgrX1gz2uqjucauZbz1-JtUfGHEKSl_ZEYGJIsGIlaEKIkVydxliE7vZ6/pub?gid=1482509711&single=true&output=csv';
+  var KEY = 'scea2026:';
+  function openForm(){ $('chk').style.display = 'none'; $('f').style.display = ''; }
+  function mem(){ try { return JSON.parse(localStorage.getItem(KEY + code) || 'null'); } catch(e){ return null; } }
+  async function check(){
+    var m = mem();
+    if (m){ $('chk').style.display = 'none'; return show(m.go === '是', m.nm || name, m.cnt); }
+    try {
+      // Google 背后多台缓存服务器陆续更新（实测报名后 5–10 分钟才全部追上），
+      // 所以同时问 3 次，任何一次查到就算已报名。名单只增不减，旧服务器只会漏报、不会错报。
+      var ac = new AbortController(), tm = setTimeout(function(){ ac.abort(); }, 4000);
+      var texts = await Promise.all([0, 1, 2].map(function(){
+        return fetch(CSV, {signal: ac.signal, cache: 'no-store'})
+          .then(function(r){ return r.ok ? r.text() : ''; })
+          .catch(function(){ return ''; });
+      }));
+      clearTimeout(tm);
+      var hit = texts.join('\n').split(/\r?\n/)
+        .map(function(l){ return l.split(','); })
+        .filter(function(c){ return (c[0] || '').trim().toUpperCase() === code; })[0];
+      if (hit){ $('chk').style.display = 'none'; return show((hit[1] || '').trim() === '是', name, (hit[2] || '').trim()); }
+    } catch(e){}              // 查不到清单就放行：宁可多收一条，不能让人报不上名
+    openForm();
+    $('btn').disabled = false;
   }
+
+  function bad(){
+    openForm();
+    $('nm').textContent = '嘉宾';
+    $('err').textContent = '链接无效，请通过邀请函上的二维码进入。Invalid link — please scan the QR code on your invitation.';
+    $('err').className = 'err on';
+  }
+  (async function(){
+    var t = (q.get('t')||'').trim().toUpperCase();
+    if (!t || !window.GUESTS || !(window.crypto && crypto.subtle)) return bad();
+    try {
+      var enc  = new TextEncoder();
+      var base = await crypto.subtle.importKey('raw', enc.encode(t), 'PBKDF2', false, ['deriveBits']);
+      var raw  = new Uint8Array(await crypto.subtle.deriveBits(
+                   {name:'PBKDF2', hash:'SHA-256', salt:enc.encode('scea2026'), iterations:100000}, base, 320));
+      var blob = window.GUESTS[hex(raw.slice(0,8))];
+      if (!blob) return bad();
+      var key  = await crypto.subtle.importKey('raw', raw.slice(8), 'AES-GCM', false, ['decrypt']);
+      var buf  = b64(blob);
+      var pt   = await crypto.subtle.decrypt({name:'AES-GCM', iv:buf.slice(0,12)}, key, buf.slice(12));
+      var g    = JSON.parse(new TextDecoder().decode(pt));
+      code = g.c; name = g.n;
+      $('code').value     = code;
+      $('nm').textContent = name;
+      $('nameIn').value   = name;
+      await check();
+    } catch(e){ bad(); }
+  })();
 
   // 选「否」就不用填人数了
   var cntBox = $('cntBox');
@@ -232,7 +286,11 @@
            headers:{'Content-Type':'application/x-www-form-urlencoded'},
            body: body.toString()})
       .catch(function(){})
-      .then(function(){ show(go.value === '是', nm, cnt && cnt.value); });
+      .then(function(){
+        var c = go.value === '是' ? cnt.value : '0';
+        try { localStorage.setItem(KEY + code, JSON.stringify({go: go.value, cnt: c, nm: nm})); } catch(e){}
+        show(go.value === '是', nm, c);
+      });
   });
 
   function show(yes, nm, cnt){
