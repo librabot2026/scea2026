@@ -72,6 +72,12 @@
   .err{margin-top:10px;font-size:13.5px;color:var(--err);display:none}
   .err.on{display:block}
 
+  .meta .arrival{display:none}
+  .done-mode .meta .deadline{display:none}
+  .done-mode .meta .arrival{display:flex}
+  .done-mode.declined .meta .arrival{display:none}
+  .done-mode .who{margin-top:24px}
+  .done-mode #done{padding:18px 10px 28px}
   #done{display:none;text-align:center;padding:46px 10px}
   #done .tick{font-size:54px;color:var(--ok);line-height:1}
   #done h2{margin:16px 0 0;font-family:"Noto Serif SC",serif;font-size:22px;color:var(--gold)}
@@ -80,6 +86,14 @@
   .opt i{font-style:normal}
   .opt .sm{font-size:12.5px;opacity:.75}
   .f .req{color:var(--err)}
+  .bad, input.bad{border-color:var(--err) !important;background:rgba(217,119,87,.08) !important}
+  .bad .opt span{border-color:var(--err) !important}                 /* 没选「是/否」或随行人数时，选项框标红 */
+  textarea{width:100%;padding:11px 13px;background:rgba(255,255,255,.05);border:1px solid var(--line);
+    border-radius:8px;color:var(--cream);font-size:15.5px;font-family:inherit;line-height:1.6;resize:vertical}
+  textarea::placeholder{color:var(--dim);opacity:.7}
+  .done-mode.declined .meta{display:none}
+  #done .redo{margin-top:24px;width:auto;min-height:46px;padding:0 26px;background:transparent;
+    border:1px solid var(--gold);color:var(--gold);font-size:15px;font-weight:500}                          /* 回复不来：不显示时间地点 */
   .comp-card{display:none;margin-top:14px;border:1px solid var(--line);border-radius:10px;
     padding:14px 16px 2px;background:rgba(255,255,255,.03)}
   .comp-card.on{display:block}
@@ -116,9 +130,12 @@
     <div class="mrow"><div class="k">地点<small class="en">VENUE</small></div>
       <div class="v">Grand Hôtel Stockholm，New York 厅
         <small class="en">New York Room · Södra Blasieholmshamnen 8, 103 27 Stockholm</small></div></div>
-    <div class="mrow"><div class="k">截止<small class="en">REPLY BY</small></div>
+    <div class="mrow deadline"><div class="k">截止<small class="en">REPLY BY</small></div>
       <div class="v">请于 2026 年 10 月 12 日前回复
         <small class="en">Please reply by 12 October 2026</small></div></div>
+    <div class="mrow arrival"><div class="k">到场<small class="en">ARRIVAL</small></div>
+      <div class="v">请于 13:00–13:30 到场签到
+        <small class="en">Please arrive between 13:00 and 13:30 for check-in</small></div></div>
   </div>
 
   <div class="who">
@@ -143,30 +160,10 @@
       </div>
     </fieldset>
 
-    <fieldset id="cntBox">
-      <legend>随行人员<span class="req">*</span>
-        <small class="en">最多 2 位，连您本人共 3 人　·　Accompanying guests: up to 2 (3 in total, including you)</small></legend>
-      <div class="opts">
-        <label class="opt"><input type="radio" name="comp" value="0"><span><i>不带随行</i><i class="en sm">None</i></span></label>
-        <label class="opt"><input type="radio" name="comp" value="1"><span><i>1 位</i><i class="en sm">1 guest</i></span></label>
-        <label class="opt"><input type="radio" name="comp" value="2"><span><i>2 位</i><i class="en sm">2 guests</i></span></label>
-      </div>
-      <div class="comp-card" id="comp1">
-        <div class="ct">随行 1<small>GUEST 1</small></div>
-        <label class="f"><span class="t">姓名　Name<span class="req">*</span></span><input type="text" id="c1n" autocomplete="off"></label>
-        <label class="f"><span class="t">公司 / 机构　Organisation</span><input type="text" id="c1c" autocomplete="off"></label>
-        <label class="f"><span class="t">职位　Position</span><input type="text" id="c1p" autocomplete="off"></label>
-      </div>
-      <div class="comp-card" id="comp2">
-        <div class="ct">随行 2<small>GUEST 2</small></div>
-        <label class="f"><span class="t">姓名　Name<span class="req">*</span></span><input type="text" id="c2n" autocomplete="off"></label>
-        <label class="f"><span class="t">公司 / 机构　Organisation</span><input type="text" id="c2c" autocomplete="off"></label>
-        <label class="f"><span class="t">职位　Position</span><input type="text" id="c2p" autocomplete="off"></label>
-      </div>
-    </fieldset>
-
-    <p class="note">以下信息如有出入，请直接修改，我们会以您填写的为准。<br>
-      <span class="en">Please correct the details below if needed.</span></p>
+    <!-- 选「是」才出现：本人信息（不设随行：要带人的单独联系，另发邀请函） -->
+    <div id="yesBox" style="display:none">
+    <p class="note">请核对并补充您的信息。<br>
+      <span class="en">Please check and complete your details.</span></p>
 
     <label class="f"><span class="t">姓名　Name<span class="req" style="color:var(--err)">*</span></span>
       <input type="text" id="nameIn" autocomplete="name"></label>
@@ -177,7 +174,18 @@
     <label class="f"><span class="t">Email</span>
       <input type="email" id="mailIn" autocomplete="email" inputmode="email"></label>
 
+    </div>
+
+    <!-- 选「否」才出现：未能出席说明（选填） -->
+    <div id="noBox" style="display:none">
+      <label class="f"><span class="t">未能出席说明（选填）<small class="en" style="display:block;margin-top:2px">Reason for not attending (optional)</small></span>
+        <textarea id="whyIn" rows="4" maxlength="300" placeholder="如方便，请简单说明　·　Optional"></textarea></label>
+    </div>
+
+    <!-- 选了是/否之后才出现提交按钮 -->
+    <div id="subBox" style="display:none">
     <button type="submit" id="btn">提交　Submit</button>
+    </div>
     <div class="err" id="err"></div>
   </form>
 
@@ -187,13 +195,9 @@
     <div class="sub" id="doneS"></div>
     <div class="en2" id="doneE"></div>
     <div class="card" id="doneC"></div>
-    <p class="note" style="margin-top:20px">请保留您的邀请函，入场时需出示上面的二维码。<br>
-      <span class="en">Please keep your invitation — the QR code is required for entry.</span></p>
+    <button type="button" id="redoBtn" class="redo" style="display:none">重新报名　Register again</button>
   </div>
 
-  <div class="foot en">
-    如有疑问请联系邀请人　·　For any questions, please contact the person who invited you
-  </div>
 </div>
 
 <script src="data.js"></script>
@@ -205,7 +209,8 @@
     pos :'entry.1434538926', mail:'entry.1989754270', go:'entry.1760395912',
     cnt :'entry.358036365',
     c1n :'entry.141686896',  c1c :'entry.69275457',  c1p :'entry.1421278641',   // 随行 1 姓名/公司/职位
-    c2n :'entry.190797018',  c2c :'entry.562748977', c2p :'entry.2002628137'    // 随行 2
+    c2n :'entry.190797018',  c2c :'entry.562748977', c2p :'entry.2002628137',   // 随行 2
+    why :'entry.540985067'   // 未能出席说明（选「否」时才发）
   };
   var q  = new URLSearchParams(location.search);
   var $  = function(id){ return document.getElementById(id); };
@@ -226,8 +231,15 @@
   function openForm(){ $('chk').style.display = 'none'; $('f').style.display = ''; }
   function mem(){ try { return JSON.parse(localStorage.getItem(KEY + code) || 'null'); } catch(e){ return null; } }
   async function check(){
+    var redo = false; try { redo = localStorage.getItem(KEY + 'redo:' + code) === '1'; } catch(e){}
+    if (redo){                // 点过「重新报名」：跳过查重，直接给表单，并选好「是」
+      openForm(); $('btn').disabled = false;
+      var y = document.querySelector('input[name=go][value="是"]');
+      y.checked = true; y.dispatchEvent(new Event('change'));
+      return;
+    }
     var m = mem();
-    if (m){ $('chk').style.display = 'none'; return show(m.go === '是', m.nm || name, m.cnt, m.comps); }
+    if (m){ $('chk').style.display = 'none'; return show(m.go === '是', m.nm || name); }
     try {
       // Google 背后多台缓存服务器陆续更新（实测报名后 5–10 分钟才全部追上），
       // 所以同时问 3 次，任何一次查到就算已报名。名单只增不减，旧服务器只会漏报、不会错报。
@@ -238,10 +250,14 @@
           .catch(function(){ return ''; });
       }));
       clearTimeout(tm);
-      var hit = texts.join('\n').split(/\r?\n/)
+      // 以最后一次为准，且只允许「否 → 是」：同一编号只要有一台服务器说「是」，就是「是」
+      var hits = texts.join('\n').split(/\r?\n/)
         .map(function(l){ return l.split(','); })
-        .filter(function(c){ return (c[0] || '').trim().toUpperCase() === code; })[0];
-      if (hit){ $('chk').style.display = 'none'; return show((hit[1] || '').trim() === '是', name, (hit[2] || '').trim()); }
+        .filter(function(c){ return (c[0] || '').trim().toUpperCase() === code; });
+      if (hits.length){
+        $('chk').style.display = 'none';
+        return show(hits.some(function(c){ return (c[1] || '').trim() === '是'; }), name);
+      }
     } catch(e){}              // 查不到清单就放行：宁可多收一条，不能让人报不上名
     openForm();
     $('btn').disabled = false;
@@ -275,56 +291,48 @@
     } catch(e){ bad(); }
   })();
 
-  // 选「否」就不用填随行；选几位随行就展开几张信息卡
-  var cntBox = $('cntBox');
-  function cards(n){ [1, 2].forEach(function(i){ $('comp' + i).className = 'comp-card' + (i <= n ? ' on' : ''); }); }
+  // 选「是」→ 本人信息；选「否」→ 说明框。来回切换，已填的内容保留
   document.querySelectorAll('input[name=go]').forEach(function(r){
     r.addEventListener('change', function(){
       var yes = r.value === '是';
-      cntBox.style.display = yes ? '' : 'none';
-      if (!yes){ document.querySelectorAll('input[name=comp]').forEach(function(c){ c.checked = false; }); cards(0); }
+      $('yesBox').style.display = yes ? '' : 'none';
+      $('noBox').style.display  = yes ? 'none' : '';
+      $('subBox').style.display = '';
+      $('err').className = 'err';
     });
   });
-  document.querySelectorAll('input[name=comp]').forEach(function(r){
-    r.addEventListener('change', function(){ cards(+r.value); });
-  });
 
+  document.addEventListener('input', function(e){ if (e.target.classList) e.target.classList.remove('bad'); });
   $('f').addEventListener('submit', function(ev){
     ev.preventDefault();
     var go  = document.querySelector('input[name=go]:checked');
-    var cp  = document.querySelector('input[name=comp]:checked');
-    var n   = cp ? +cp.value : 0;
-    var comps = [];
-    var nm  = $('nameIn').value.trim();
+    var nm  = (go && go.value === '否') ? name : $('nameIn').value.trim();   // 不来的人不用填姓名，身份来自二维码
     var err = $('err');
 
-    if (!go)                       return fail('请选择是否参加　Please choose whether you will attend.');
-    if (go.value === '是' && !cp)  return fail('请选择是否带随行人员　Please choose whether you will bring accompanying guests.');
-    if (go.value === '是'){
-      for (var i = 1; i <= n; i++){
-        var cn = $('c' + i + 'n').value.trim();
-        if (!cn) return fail('请填写随行 ' + i + ' 的姓名　Please enter the name of guest ' + i + '.');
-        comps.push({n: cn, c: $('c' + i + 'c').value.trim(), p: $('c' + i + 'p').value.trim()});
-      }
+    // 按页面从上到下的顺序检查；出错就跳到那一栏、边框标红
+    document.querySelectorAll('.bad').forEach(function(x){ x.classList.remove('bad'); });
+    function fail(m, el){
+      err.textContent = m; err.className = 'err on';
+      if (el){ el.classList.add('bad'); el.scrollIntoView({block: 'center'}); if (el.focus) el.focus(); }
+      return false;
     }
-    var total = go.value === '是' ? String(1 + n) : '0';
-    if (!nm)                       return fail('请填写姓名　Please enter your name.');
-    function fail(m){ err.textContent = m; err.className='err on'; return false; }
+    if (!go)  return fail('请选择是否参加　Please choose whether you will attend.', document.querySelector('.opts'));
+    if (go.value === '是' && !nm)  return fail('请填写姓名　Please enter your name.', $('nameIn'));
+    var total = go.value === '是' ? '1' : '0';          // 不设随行，来就是本人 1 位
     err.className = 'err';
 
     var body = new URLSearchParams();
     body.append(E.code, code);
     body.append(E.name, nm);
-    body.append(E.co,   $('coIn').value.trim());
-    body.append(E.pos,  $('posIn').value.trim());
-    body.append(E.mail, $('mailIn').value.trim());
+    if (go.value === '是'){
+      body.append(E.co,   $('coIn').value.trim());
+      body.append(E.pos,  $('posIn').value.trim());
+      body.append(E.mail, $('mailIn').value.trim());
+    } else if (E.why){
+      body.append(E.why,  $('whyIn').value.trim());
+    }
     body.append(E.go,   go.value);
     body.append(E.cnt,  total);
-    comps.forEach(function(c, k){
-      body.append(E['c' + (k+1) + 'n'], c.n);
-      body.append(E['c' + (k+1) + 'c'], c.c);
-      body.append(E['c' + (k+1) + 'p'], c.p);
-    });
 
     $('btn').disabled = true;
     $('btn').textContent = '提交中…　Submitting…';
@@ -336,38 +344,38 @@
            body: body.toString()})
       .catch(function(){})
       .then(function(){
-        var names = comps.map(function(c){ return c.n; });
-        try { localStorage.setItem(KEY + code, JSON.stringify({go: go.value, cnt: total, nm: nm, comps: names})); } catch(e){}
-        show(go.value === '是', nm, total, names);
+        try { localStorage.setItem(KEY + code, JSON.stringify({go: go.value, cnt: total, nm: nm}));
+              localStorage.removeItem(KEY + 'redo:' + code); } catch(e){}
+        show(go.value === '是', nm);
       });
   });
 
-  function show(yes, nm, cnt, comps){
+  function show(yes, nm){
     $('f').style.display = 'none';
     var d = $('done'); d.style.display = 'block';
+    var w = document.querySelector('.wrap'), meta = document.querySelector('.meta');
+    w.insertBefore(document.querySelector('.who'), meta);    // 页面头固定最上；结果紧跟页面头，时间地点退到下面
+    w.insertBefore(d, meta);
+    w.className += ' done-mode' + (yes ? '' : ' declined');
     if (yes){
       $('doneT').innerHTML = '报名成功<span class="t-en">REGISTRATION CONFIRMED</span>';
       $('doneS').textContent = '期待与您相见。';
       $('doneE').textContent = 'Thank you — we look forward to seeing you.';
-      var total = +cnt || 1, k = total - 1;
-      var ppl = total === 1 ? '1 person' : total + ' people';
-      var who = comps ? (comps.length ? comps.map(esc).join('、') : '无')   // 本机报的，知道名字
-                      : (k ? k + ' 位' : '无');                             // 换手机进来，只知道人数
-      var whoEn = comps ? (comps.length ? '' : 'None')
-                        : (k ? k + (k === 1 ? ' accompanying guest' : ' accompanying guests') : 'None');
-      $('doneC').innerHTML =
-        row('姓名', 'NAME', esc(nm), '') +
-        row('随行', 'GUESTS', who, whoEn) +
-        row('出席人数', 'TOTAL', total + ' 位', ppl + ', including you');   // 时间地点页面上方已有，不重复
+      $('redoBtn').style.display = 'none';
+      $('doneC').style.display = 'none';          // 姓名上方已大字显示，不再单列信息卡
     } else {
       $('doneT').innerHTML = '已收到您的回复<span class="t-en">REPLY RECEIVED</span>';
       $('doneS').textContent = '感谢您的告知，期待下次相聚。';
-      $('doneE').textContent = 'Thank you for letting us know.';
+      $('doneE').textContent = 'Thank you for letting us know — we hope to see you next time.';
+      $('redoBtn').style.display = '';          // 后悔了可以重新报名（只允许 否 → 是）
       $('doneC').style.display = 'none';
-      document.querySelectorAll('#done .note').forEach(function(n){ n.style.display='none'; });
     }
     window.scrollTo(0,0);
   }
+  $('redoBtn').addEventListener('click', function(){
+    try { localStorage.setItem(KEY + 'redo:' + code, '1'); } catch(e){}
+    location.reload();
+  });
   function row(k, ke, v, ve){
     return '<div class="mrow"><div class="k">' + k + '<small class="en">' + ke + '</small></div>' +
            '<div class="v">' + v + (ve ? '<small class="en">' + ve + '</small>' : '') + '</div></div>';
