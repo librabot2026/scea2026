@@ -125,8 +125,8 @@
 
   <div class="meta">
     <div class="mrow"><div class="k">时间<small class="en">TIME</small></div>
-      <div class="v">2026 年 10 月 15 日（星期四）13:30–15:30
-        <small class="en">Thursday, 15 October 2026 · 13:30–15:30</small></div></div>
+      <div class="v">2026 年 10 月 15 日（星期四）13:30–17:00
+        <small class="en">Thursday, 15 October 2026 · 13:30–17:00</small></div></div>
     <div class="mrow"><div class="k">地点<small class="en">VENUE</small></div>
       <div class="v">Grand Hôtel Stockholm，New York 厅
         <small class="en">New York Room · Södra Blasieholmshamnen 8, 103 27 Stockholm</small></div></div>
@@ -203,14 +203,12 @@
 <script src="data.js"></script>
 <script>
 (function(){
-  var FORM = '1FAIpQLSeT0szpZ-PD0emXc-UqWCkzmWd0Ec-YcptKJNRgfIiFXhXuJw';
+  var FORM = '1FAIpQLSf6mvILm3FsIK4jACt0G-dNJk3gvkJb1APWioYnKyb886gheQ';   // 2026-09-25 重建后的报名表单
   var E = {                                   // 字段 ID —— 改表单题目不影响，删题重建才会变
-    code:'entry.1876901674', name:'entry.146832424',  co:'entry.1851509862',
-    pos :'entry.1434538926', mail:'entry.1989754270', go:'entry.1760395912',
-    cnt :'entry.358036365',
-    c1n :'entry.141686896',  c1c :'entry.69275457',  c1p :'entry.1421278641',   // 随行 1 姓名/公司/职位
-    c2n :'entry.190797018',  c2c :'entry.562748977', c2p :'entry.2002628137',   // 随行 2
-    why :'entry.540985067'   // 未能出席说明（选「否」时才发）
+    code:'entry.1020588273', name:'entry.1483606712', co:'entry.1284134871',
+    pos :'entry.264834659',  mail:'entry.1414023682', go:'entry.1224111083',
+    cnt :'entry.1689544166',
+    why :'entry.1108440385'  // 未能出席说明（选「否」时才发）
   };
   var q  = new URLSearchParams(location.search);
   var $  = function(id){ return document.getElementById(id); };
@@ -226,7 +224,7 @@
   // ── 查重：只能报一次 ──────────────────────────────────────────
   // ① 本机记忆（即时）  ② 公开的「已报名编号」清单（Google 约 5 分钟刷新）  ③ 都没有 → 显示表单
   // 清单只有 编号,是否参加,人数 三列，不含任何姓名邮箱；每个编号只取第一次提交。
-  var CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRT1CZmOwTSQx-I5QxkDc3TgrX1gz2uqjucauZbz1-JtUfGHEKSl_ZEYGJIsGIlaEKIkVydxliE7vZ6/pub?gid=1482509711&single=true&output=csv';
+  var CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSyjXxy6V-mdDp4iTp477qDFDS514aRYiMUbhdFWVXxGMfuvuFRp42MjGLtpgRie_ISg6PQ0VqClg-M/pub?gid=287779818&single=true&output=csv';
   var KEY = 'scea2026:';
   function openForm(){ $('chk').style.display = 'none'; $('f').style.display = ''; }
   function mem(){ try { return JSON.parse(localStorage.getItem(KEY + code) || 'null'); } catch(e){ return null; } }
