@@ -200,7 +200,8 @@
 
 </div>
 
-<script src="data.js"></script>
+<!-- 名单每次都取最新版（带时间戳），避开微信缓存：否则追加的嘉宾会显示「嘉宾 Guest」、提交不了 -->
+<script>document.write('<script src="data.js?v=' + Date.now() + '"><\/script>');</script>
 <script>
 (function(){
   var FORM = '1FAIpQLSf6mvILm3FsIK4jACt0G-dNJk3gvkJb1APWioYnKyb886gheQ';   // 2026-09-25 重建后的报名表单
