@@ -225,7 +225,7 @@
   // ① 本机记忆（即时）  ② 公开的「已报名编号」清单（Google 约 5 分钟刷新）  ③ 都没有 → 显示表单
   // 清单只有 编号,是否参加,人数 三列，不含任何姓名邮箱；每个编号只取第一次提交。
   var CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSyjXxy6V-mdDp4iTp477qDFDS514aRYiMUbhdFWVXxGMfuvuFRp42MjGLtpgRie_ISg6PQ0VqClg-M/pub?gid=287779818&single=true&output=csv';
-  var KEY = 'scea2026:';
+  var KEY = 'scea2026v2:';   // 9-25 表单重建后换新前缀：旧前缀的「已报名」记录作废（旧数据已随旧表单删除）
   function openForm(){ $('chk').style.display = 'none'; $('f').style.display = ''; }
   function mem(){ try { return JSON.parse(localStorage.getItem(KEY + code) || 'null'); } catch(e){ return null; } }
   async function check(){
