@@ -58,7 +58,7 @@
 
   label.f{display:block;margin-bottom:15px}
   label.f .t{font-size:13.5px;color:var(--dim);margin-bottom:6px;display:block}
-  input[type=text],input[type=email]{width:100%;min-height:48px;padding:11px 13px;
+  input[type=text],input[type=email],input[type=tel]{width:100%;min-height:48px;padding:11px 13px;
     background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:8px;
     color:var(--cream);font-size:15.5px;font-family:inherit}
   input:focus{outline:none;border-color:var(--gold);background:rgba(255,255,255,.08)}
@@ -173,6 +173,8 @@
       <input type="text" id="posIn" autocomplete="organization-title"></label>
     <label class="f"><span class="t">Email</span>
       <input type="email" id="mailIn" autocomplete="email" inputmode="email"></label>
+    <label class="f"><span class="t">电话　Phone<small class="en" style="font-weight:400"> （选填 · optional）</small></span>
+      <input type="tel" id="telIn" autocomplete="tel" inputmode="tel" maxlength="30"></label>
 
     </div>
 
@@ -208,7 +210,7 @@
   var E = {                                   // 字段 ID —— 改表单题目不影响，删题重建才会变
     code:'entry.1020588273', name:'entry.1483606712', co:'entry.1284134871',
     pos :'entry.264834659',  mail:'entry.1414023682', go:'entry.1224111083',
-    cnt :'entry.1689544166',
+    cnt :'entry.1689544166', tel:'entry.1065336245',
     why :'entry.1108440385'  // 未能出席说明（选「否」时才发）
   };
   var q  = new URLSearchParams(location.search);
@@ -327,6 +329,7 @@
       body.append(E.co,   $('coIn').value.trim());
       body.append(E.pos,  $('posIn').value.trim());
       body.append(E.mail, $('mailIn').value.trim());
+      body.append(E.tel,  $('telIn').value.trim());
     } else if (E.why){
       body.append(E.why,  $('whyIn').value.trim());
     }
