@@ -42,8 +42,8 @@
 
   form{margin-top:26px}
   fieldset{border:0;margin:0 0 22px;padding:0}
-  legend{padding:0;font-size:15px;font-weight:500;margin-bottom:11px}
-  legend .req{color:var(--err);margin-left:4px}
+  legend{padding:0;font-size:13.5px;font-weight:400;color:var(--dim);margin-bottom:8px}
+  legend .req{color:var(--err)}
   legend small{display:block;margin-top:3px;font-size:12.5px;font-weight:400;color:var(--dim)}
 
   .opts{display:flex;gap:11px}
@@ -150,8 +150,7 @@
     <input type="hidden" id="code">
 
     <fieldset>
-      <legend>是否确定参加<span class="req">*</span>
-        <small class="en">Will you attend?</small></legend>
+      <legend>是否确定参加　Will you attend?<span class="req">*</span></legend>
       <div class="opts">
         <label class="opt"><input type="radio" name="go" value="是" required>
           <span><i style="font-style:normal">是，我会出席</i><i class="en" style="font-style:normal;font-size:12.5px;opacity:.75">Yes</i></span></label>
@@ -162,26 +161,40 @@
 
     <!-- 选「是」才出现：本人信息（不设随行：要带人的单独联系，另发邀请函） -->
     <div id="yesBox" style="display:none">
-    <p class="note">请核对并补充您的信息。<br>
-      <span class="en">Please check and complete your details.</span></p>
+    <p class="note">请填写您的信息。　Please fill in your details.</p>
 
     <label class="f"><span class="t">姓名　Name<span class="req" style="color:var(--err)">*</span></span>
       <input type="text" id="nameIn" autocomplete="name"></label>
-    <label class="f"><span class="t">公司 / 机构　Organisation</span>
+    <fieldset id="kindBox">
+      <legend>参加身份　Attending as<span class="req">*</span></legend>
+      <div class="opts" id="kindOpts">
+        <label class="opt"><input type="radio" name="kind" value="个人">
+          <span><i style="font-style:normal">个人</i><i class="en" style="font-style:normal;font-size:12.5px;opacity:.75">Private</i></span></label>
+        <label class="opt"><input type="radio" name="kind" value="公司">
+          <span><i style="font-style:normal">公司 / 机构</i><i class="en" style="font-style:normal;font-size:12.5px;opacity:.75">Organisation</i></span></label>
+      </div>
+    </fieldset>
+    <!-- 选「公司 / 机构」才出现 -->
+    <div id="orgBox" style="display:none">
+    <label class="f"><span class="t">公司 / 机构名称　Organisation<span class="req" style="color:var(--err)">*</span></span>
       <input type="text" id="coIn" autocomplete="organization"></label>
-    <label class="f"><span class="t">职位　Position</span>
+    <label class="f"><span class="t">职位　Position<span class="req" style="color:var(--err)">*</span></span>
       <input type="text" id="posIn" autocomplete="organization-title"></label>
-    <label class="f"><span class="t">Email</span>
+    </div>
+    <!-- 选了参加身份才出现 -->
+    <div id="contactBox" style="display:none">
+    <label class="f"><span class="t">邮箱　Email<span class="req" style="color:var(--err)">*</span></span>
       <input type="email" id="mailIn" autocomplete="email" inputmode="email"></label>
-    <label class="f"><span class="t">电话　Phone<small class="en" style="font-weight:400"> （选填 · optional）</small></span>
+    <label class="f"><span class="t">电话　Phone<span class="req" style="color:var(--err)">*</span></span>
       <input type="tel" id="telIn" autocomplete="tel" inputmode="tel" maxlength="30"></label>
+    </div>
 
     </div>
 
     <!-- 选「否」才出现：未能出席说明（选填） -->
     <div id="noBox" style="display:none">
-      <label class="f"><span class="t">未能出席说明（选填）<small class="en" style="display:block;margin-top:2px">Reason for not attending (optional)</small></span>
-        <textarea id="whyIn" rows="4" maxlength="300" placeholder="如方便，请简单说明　·　Optional"></textarea></label>
+      <label class="f"><span class="t">未能出席说明（选填）　Reason for absence (optional)</span>
+        <textarea id="whyIn" rows="4" maxlength="300"></textarea></label>
     </div>
 
     <!-- 选了是/否之后才出现提交按钮 -->
@@ -298,11 +311,22 @@
       var yes = r.value === '是';
       $('yesBox').style.display = yes ? '' : 'none';
       $('noBox').style.display  = yes ? 'none' : '';
-      $('subBox').style.display = '';
+      $('subBox').style.display = (yes && !document.querySelector('input[name=kind]:checked')) ? 'none' : '';
       $('err').className = 'err';
     });
   });
 
+  // 参加身份：选「公司 / 机构」才显示公司、职位；来回切换，已填的内容保留
+  var SOLO = '个人 · Private';
+  document.querySelectorAll('input[name=kind]').forEach(function(r){
+    r.addEventListener('change', function(){
+      $('orgBox').style.display = r.value === '公司' ? '' : 'none';
+      $('contactBox').style.display = '';
+      $('subBox').style.display = '';
+      $('kindOpts').classList.remove('bad');
+      $('err').className = 'err';
+    });
+  });
   document.addEventListener('input', function(e){ if (e.target.classList) e.target.classList.remove('bad'); });
   $('f').addEventListener('submit', function(ev){
     ev.preventDefault();
@@ -319,6 +343,20 @@
     }
     if (!go)  return fail('请选择是否参加　Please choose whether you will attend.', document.querySelector('.opts'));
     if (go.value === '是' && !nm)  return fail('请填写姓名　Please enter your name.', $('nameIn'));
+    var kind = document.querySelector('input[name=kind]:checked');
+    if (go.value === '是'){
+      if (!kind) return fail('请选择参加身份：个人 或 公司 / 机构　Please choose Private or Organisation.', $('kindOpts'));
+      if (kind.value === '公司' && !$('coIn').value.trim())
+        return fail('请填写公司 / 机构名称　Please enter your organisation.', $('coIn'));
+      if (kind.value === '公司' && !$('posIn').value.trim())
+        return fail('请填写职位　Please enter your position.', $('posIn'));
+      var em = $('mailIn').value.trim();
+      if (!em) return fail('请填写 Email　Please enter your email.', $('mailIn'));
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) return fail('Email 格式不对，请检查　Please check your email address.', $('mailIn'));
+      var tel = $('telIn').value.trim();
+      if (!tel) return fail('请填写电话　Please enter your phone number.', $('telIn'));
+      if ((tel.match(/\d/g) || []).length < 7) return fail('电话号码不完整，请检查　Please check your phone number.', $('telIn'));
+    }
     var total = go.value === '是' ? '1' : '0';          // 不设随行，来就是本人 1 位
     err.className = 'err';
 
@@ -326,8 +364,9 @@
     body.append(E.code, code);
     body.append(E.name, nm);
     if (go.value === '是'){
-      body.append(E.co,   $('coIn').value.trim());
-      body.append(E.pos,  $('posIn').value.trim());
+      var solo = kind.value === '个人';
+      body.append(E.co,   solo ? SOLO : $('coIn').value.trim());
+      body.append(E.pos,  solo ? ''   : $('posIn').value.trim());
       body.append(E.mail, $('mailIn').value.trim());
       body.append(E.tel,  $('telIn').value.trim());
     } else if (E.why){
